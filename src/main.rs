@@ -55,8 +55,14 @@ fn main() {
 
     let pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
+    let pb_wb = ProgressBar::new(image_height as u64);
+    pb_wb.set_style(ProgressStyle::default_bar().template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos:>7}/{len:7} {msg}")
+        .unwrap()
+        .progress_chars("##-"));
+    pb_wb.set_message("Ray tracing");
     // Render
     for j in 0..image_height {
+        pb_wb.inc(1);
         for i in 0..image_width {
             let pixel_center = pixel00_loc + i as f64 * pixel_delta_u + j as f64 * pixel_delta_v;
             let ray_direction = camera_center - pixel_center;
@@ -66,5 +72,7 @@ fn main() {
             colors::write_color(&mut scale_wb_image, i as u32, j as u32, pixel_color);
         }
     }
+    pb_wb.finish();
     scale_wb_image.save("output_wb.png").unwrap();
+    // ===================================================================== Ray tracing in scene
 }
